@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Payment - WEB SYAFA STORE</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1><i class="fas fa-server"></i> WEB SYAFA STORE</h1>
+                <p class="tagline">Complete Your Payment</p>
+            </div>
+            <a href="/" class="back-home">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </header>
+
+        <!-- Payment Content -->
+        <main class="payment-content">
+            <!-- Payment Status -->
+            <div class="payment-status-card">
+                <div class="status-header">
+                    <h2><i class="fas fa-qrcode"></i> QRIS Payment</h2>
+                    <div class="timer" id="paymentTimer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timerText">15:00</span>
+                    </div>
+                </div>
+                
+                <div class="status-indicators">
+                    <div class="status-step active">
+                        <div class="step-number">1</div>
+                        <span>Order Created</span>
+                    </div>
+                    <div class="status-step active">
+                        <div class="step-number">2</div>
+                        <span>QRIS Payment</span>
+                    </div>
+                    <div class="status-step">
+                        <div class="step-number">3</div>
+                        <span>Processing</span>
+                    </div>
+                    <div class="status-step">
+                        <div class="step-number">4</div>
+                        <span>Server Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Code Container -->
+            <div class="qris-container">
+                <div class="qris-card">
+                    <div class="qris-header">
+                        <h3><i class="fas fa-mobile-alt"></i> Scan QR Code Below</h3>
+                        <p>Use any e-wallet or banking app that supports QRIS</p>
+                    </div>
+                    
+                    <div class="qris-display">
+                        <div id="qrisImage" class="qris-image">
+                            <!-- QR will be loaded here -->
+                            <div class="loading-qr">
+                                <div class="spinner"></div>
+                                <p>Loading QR Code...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="qris-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Order ID:</span>
+                                <span class="detail-value" id="orderIdDisplay">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Amount:</span>
+                                <span class="detail-value" id="amountDisplay">Rp 0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Valid Until:</span>
+                                <span class="detail-value" id="expiryDisplay">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-instructions">
+                        <h4><i class="fas fa-info-circle"></i> How to Pay:</h4>
+                        <ol>
+                            <li>Open your e-wallet or banking app</li>
+                            <li>Tap "Scan QR Code" or "Pay with QRIS"</li>
+                            <li>Scan the QR code above</li>
+                            <li>Confirm the payment amount</li>
+                            <li>Complete the payment</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Order Details -->
+                <div class="order-details-card">
+                    <h3><i class="fas fa-receipt"></i> Order Details</h3>
+                    
+                    <div class="details-grid">
+                        <div class="detail-row">
+                            <span>Username:</span>
+                            <strong id="usernameDetail">-</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span>Email:</span>
+                            <strong id="emailDetail">-</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span>Package:</span>
+                            <strong id="packageDetail">-</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span>Server Specs:</span>
+                            <strong id="specsDetail">-</strong>
+                        </div>
+                        <div class="detail-row">
+                            <span>Order Time:</span>
+                            <strong id="orderTimeDetail">-</strong>
+                        </div>
+                    </div>
+
+                    <div class="status-updates">
+                        <h4><i class="fas fa-sync-alt"></i> Status Updates</h4>
+                        <div class="updates-list" id="statusUpdates">
+                            <div class="update-item">
+                                <i class="fas fa-circle"></i>
+                                <span>Order created successfully</span>
+                                <small class="update-time">Just now</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-secondary" id="copyOrderIdBtn">
+                            <i class="fas fa-copy"></i> Copy Order ID
+                        </button>
+                        <a href="/" class="btn-outline">
+                            <i class="fas fa-plus"></i> New Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="important-notes">
+                <div class="note-card warning">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Important Notes</h4>
+                    <ul>
+                        <li>Payment must be completed within 15 minutes</li>
+                        <li>Server provisioning begins automatically after payment confirmation</li>
+                        <li>Credentials will be displayed on the status page after payment</li>
+                        <li>Keep your Order ID for future reference</li>
+                    </ul>
+                </div>
+                
+                <div class="note-card info">
+                    <h4><i class="fas fa-question-circle"></i> Need Help?</h4>
+                    <p>If payment is successful but status doesn't update, please contact support with your Order ID.</p>
+                    <button class="btn-outline" id="checkStatusBtn">
+                        <i class="fas fa-sync-alt"></i> Check Status Now
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-store"></i> WEB SYAFA STORE</h4>
+                    <p>Professional Pterodactyl server hosting</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-shield-alt"></i> Payment Security</h4>
+                    <p>Secured by Atlantic H2H Payment Gateway</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 WEB SYAFA STORE. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Status Updated Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content success">
+            <div class="modal-header">
+                <h3><i class="fas fa-check-circle"></i> Payment Successful!</h3>
+            </div>
+            <div class="modal-body">
+                <p>Your payment has been confirmed. Server provisioning has started.</p>
+                <div class="modal-actions">
+                    <a href="#" id="viewStatusLink" class="btn-primary">
+                        <i class="fas fa-external-link-alt"></i> View Server Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <script src="/js/payment.js"></script>
+</body>
+</html>

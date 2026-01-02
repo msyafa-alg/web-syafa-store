@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status - WEB SYAFA STORE</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1><i class="fas fa-server"></i> WEB SYAFA STORE</h1>
+                <p class="tagline">Order Status & Server Details</p>
+            </div>
+            <a href="/" class="back-home">
+                <i class="fas fa-plus"></i> New Order
+            </a>
+        </header>
+
+        <!-- Status Content -->
+        <main class="status-content">
+            <!-- Order Lookup -->
+            <div class="lookup-card">
+                <h2><i class="fas fa-search"></i> Check Order Status</h2>
+                <p>Enter your Order ID to view server details and status</p>
+                
+                <div class="lookup-form">
+                    <div class="form-group-inline">
+                        <input 
+                            type="text" 
+                            id="statusOrderId" 
+                            placeholder="Enter Order ID (e.g., WS1681234567)"
+                            value=""
+                        >
+                        <button class="btn-primary" id="lookupOrderBtn">
+                            <i class="fas fa-search"></i> Check Status
+                        </button>
+                    </div>
+                    <div class="form-note">
+                        <i class="fas fa-info-circle"></i> Order ID was provided during payment
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Details -->
+            <div id="orderDetails" class="order-details-section">
+                <!-- Content will be loaded by JavaScript -->
+                <div class="empty-state">
+                    <i class="fas fa-search fa-3x"></i>
+                    <h3>Enter Order ID to View Details</h3>
+                    <p>Check the status of your server order and access credentials</p>
+                </div>
+            </div>
+
+            <!-- Status Guide -->
+            <div class="status-guide">
+                <h3><i class="fas fa-info-circle"></i> Status Guide</h3>
+                <div class="guide-grid">
+                    <div class="guide-card pending">
+                        <div class="guide-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4>Pending Payment</h4>
+                        <p>QRIS payment not yet completed. Scan and pay within 15 minutes.</p>
+                    </div>
+                    <div class="guide-card processing">
+                        <div class="guide-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h4>Processing</h4>
+                        <p>Payment confirmed. Server is being provisioned (2-5 minutes).</p>
+                    </div>
+                    <div class="guide-card success">
+                        <div class="guide-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h4>Active</h4>
+                        <p>Server ready! Use the credentials below to access your server.</p>
+                    </div>
+                    <div class="guide-card failed">
+                        <div class="guide-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <h4>Failed / Expired</h4>
+                        <p>Payment failed or expired. Please create a new order.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Information -->
+            <div class="support-card">
+                <div class="support-header">
+                    <h3><i class="fas fa-headset"></i> Need Assistance?</h3>
+                    <p>Our support team is here to help you</p>
+                </div>
+                <div class="support-content">
+                    <div class="support-item">
+                        <i class="fas fa-question-circle"></i>
+                        <div>
+                            <h4>Payment Issues</h4>
+                            <p>If payment was deducted but status not updated, contact us with your Order ID and payment proof.</p>
+                        </div>
+                    </div>
+                    <div class="support-item">
+                        <i class="fas fa-server"></i>
+                        <div>
+                            <h4>Server Access Problems</h4>
+                            <p>If you cannot access your server with provided credentials, contact support for assistance.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-store"></i> WEB SYAFA STORE</h4>
+                    <p>Professional Pterodactyl server hosting</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-link"></i> Quick Links</h4>
+                    <a href="/">Order New Server</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 WEB SYAFA STORE. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Credentials Modal -->
+    <div id="credentialsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Server Credentials</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="credentials-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Keep these credentials secure. Do not share with anyone.</p>
+                </div>
+                <div class="credentials-list">
+                    <div class="credential-item">
+                        <span class="cred-label">Panel URL:</span>
+                        <div class="cred-value" id="modalPanelUrl">-</div>
+                        <button class="copy-btn" data-target="modalPanelUrl">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="credential-item">
+                        <span class="cred-label">Username:</span>
+                        <div class="cred-value" id="modalUsername">-</div>
+                        <button class="copy-btn" data-target="modalUsername">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="credential-item">
+                        <span class="cred-label">Password:</span>
+                        <div class="cred-value" id="modalPassword">-</div>
+                        <button class="copy-btn" data-target="modalPassword">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="credential-item">
+                        <span class="cred-label">Email:</span>
+                        <div class="cred-value" id="modalEmail">-</div>
+                        <button class="copy-btn" data-target="modalEmail">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="copyAllBtn">
+                        <i class="fas fa-copy"></i> Copy All Credentials
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/status.js"></script>
+</body>
+</html>

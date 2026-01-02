@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB SYAFA STORE - Pterodactyl Server Hosting</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <h1><i class="fas fa-server"></i> WEB SYAFA STORE</h1>
+                <p class="tagline">Professional Pterodactyl Server Hosting</p>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot active"></div>
+                <span>System Online</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="hero">
+                <h2>Deploy Your Bot Server in Minutes</h2>
+                <p>High-performance Pterodactyl servers optimized for Telegram & WhatsApp bots</p>
+            </div>
+
+            <!-- Order Form -->
+            <div class="order-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-shopping-cart"></i> Order New Server</h3>
+                    <p class="subtitle">Fill in the details below to purchase your server</p>
+                </div>
+
+                <form id="orderForm">
+                    <!-- Package Selection -->
+                    <div class="form-group">
+                        <label for="packageSelect"><i class="fas fa-cube"></i> Server Package</label>
+                        <div class="package-grid" id="packageGrid">
+                            <!-- Packages will be loaded by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Username Input -->
+                    <div class="form-group">
+                        <label for="username"><i class="fas fa-user"></i> Panel Username</label>
+                        <div class="input-with-info">
+                            <input 
+                                type="text" 
+                                id="username" 
+                                placeholder="Enter your Pterodactyl username" 
+                                required
+                                minlength="3"
+                                maxlength="16"
+                                pattern="[a-zA-Z0-9]+"
+                                title="Only letters and numbers, no spaces"
+                            >
+                            <div class="input-info">
+                                <i class="fas fa-info-circle"></i>
+                                <span>3-16 characters, letters and numbers only</span>
+                            </div>
+                        </div>
+                        <div class="auto-generate">
+                            <small>Email will be auto-generated: <span id="emailPreview">username@gmail.com</span></small>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="order-summary">
+                        <h4><i class="fas fa-receipt"></i> Order Summary</h4>
+                        <div class="summary-content">
+                            <div class="summary-row">
+                                <span>Package:</span>
+                                <span id="summaryPackage">-</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>RAM:</span>
+                                <span id="summaryRam">-</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Disk:</span>
+                                <span id="summaryDisk">-</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>CPU:</span>
+                                <span id="summaryCpu">-</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span>Total Price:</span>
+                                <span id="summaryPrice">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group">
+                        <button type="submit" class="btn-primary" id="submitBtn">
+                            <i class="fas fa-qrcode"></i> Continue to QRIS Payment
+                        </button>
+                        <div class="form-note">
+                            <i class="fas fa-shield-alt"></i> Secure payment via Atlantic H2H • QRIS only
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Features -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4>Instant Activation</h4>
+                    <p>Server provisioned automatically after payment confirmation</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Secure Payment</h4>
+                    <p>QRIS payments processed through Atlantic H2H gateway</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h4>24/7 Support</h4>
+                    <p>Professional support for server setup and maintenance</p>
+                </div>
+            </div>
+
+            <!-- Recent Orders (Demo) -->
+            <div class="recent-orders">
+                <h3><i class="fas fa-history"></i> Recent Orders</h3>
+                <div class="orders-list">
+                    <div class="order-status-card success">
+                        <span class="order-id">WS1681234567</span>
+                        <span class="status-badge success">Active</span>
+                        <span class="order-details">Premium (4GB) • 2 hours ago</span>
+                    </div>
+                    <div class="order-status-card pending">
+                        <span class="order-id">WS1681234568</span>
+                        <span class="status-badge pending">Pending</span>
+                        <span class="order-details">Standard (2GB) • 15 minutes ago</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4><i class="fas fa-store"></i> WEB SYAFA STORE</h4>
+                    <p>Professional Pterodactyl server hosting for bot developers</p>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-link"></i> Quick Links</h4>
+                    <a href="/">Order Server</a>
+                    <a href="#" id="checkOrderBtn">Check Order Status</a>
+                </div>
+                <div class="footer-section">
+                    <h4><i class="fas fa-credit-card"></i> Payment Method</h4>
+                    <div class="payment-method">
+                        <i class="fas fa-qrcode"></i> QRIS Only
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 WEB SYAFA STORE. All rights reserved.</p>
+                <p class="footer-note">Powered by Atlantic H2H & Pterodactyl Panel</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Order Check Modal -->
+    <div id="checkOrderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-search"></i> Check Order Status</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="orderIdInput"><i class="fas fa-hashtag"></i> Order ID</label>
+                    <input 
+                        type="text" 
+                        id="orderIdInput" 
+                        placeholder="Enter your Order ID (e.g., WS1681234567)"
+                    >
+                    <button class="btn-secondary" id="checkStatusBtn">
+                        <i class="fas fa-search"></i> Check Status
+                    </button>
+                </div>
+                <div id="orderStatusResult" class="order-status-result">
+                    <!-- Results will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Processing your order...</p>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
