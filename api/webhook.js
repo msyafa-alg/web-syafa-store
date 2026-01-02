@@ -40,11 +40,18 @@ router.post('/', async (req, res) => {
     }
     
     // Check if deposit was successful
-    if (depositData.status !== 'success') {
-      console.log(`ℹ️ Payment not successful, status: ${depositData.status}`);
-      await storage.updateOrderStatus(depositData.reff_id, 'failed');
-      return res.json({ received: true, status: 'not_successful' });
-    }
+if (depositData.status === 'processing') {
+  console.log(`⏳ Payment still processing: ${depositData.reff_id}`);
+  await storage.updateOrderStatus(depositData.reff_id, 'pending');
+  return res.json({ received: true });
+}
+
+if (depositData.status !== 'success') {
+  console.log(`❌ Payment failed: ${depositData.reff_id}`);
+  await storage.updateOrderStatus(depositData.reff_id, 'failed');
+  return res.json({ received: true });
+}
+
 
     // Get order from storage
     const order = await storage.getOrder(depositData.reff_id);
