@@ -28,49 +28,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Extract order ID from URL
     const pathParts = window.location.pathname.split('/');
     orderId = pathParts[pathParts.length - 1];
-    
+
     if (!orderId || orderId === 'payment') {
         redirectToHome('Invalid order ID');
         return;
     }
-    
-    await loadOrderData();
+
+    const orderFound = await loadOrderData();
     setupEventListeners();
-    startPaymentTimer();
-    startStatusPolling();
+
+    // Only start timers and polling if order was found
+    if (orderFound) {
+        startPaymentTimer();
+        startStatusPolling();
+    }
 });
 
 // Load order data with retry logic
 async function loadOrderData(retryCount = 0, maxRetries = 3) {
     try {
         showLoading();
-        
+
         const response = await fetch(`/api/check-order/${orderId}`);
         const data = await response.json();
-        
+
         if (data.success) {
             orderData = data.order;
             renderOrderData();
-            
+
             // If payment already successful, redirect to status
             if (orderData.status === 'success') {
                 redirectToStatus();
-                return;
+                return true;
             }
-            
+
             // If order is failed, show message
             if (orderData.status === 'failed') {
                 showError('Payment failed or expired. Please create a new order.');
-                return;
+                return false;
             }
+
+            return true;
         } else {
             // Order not found - implement retry logic
             if (retryCount < maxRetries) {
                 const waitTime = (retryCount + 1) * 1000; // 1s, 2s, 3s
                 console.log(`Order not found, retrying in ${waitTime}ms... (attempt ${retryCount + 1}/${maxRetries})`);
-                
+
                 addStatusUpdate(`Loading order data... (attempt ${retryCount + 1}/${maxRetries})`, 'info');
-                
+
                 // Show temporary loading message
                 const loadingMsg = document.createElement('div');
                 loadingMsg.className = 'order-not-found-loading';
@@ -79,18 +85,17 @@ async function loadOrderData(retryCount = 0, maxRetries = 3) {
                     <i class="fas fa-spinner fa-spin"></i>
                     <span>Loading order data, please wait...</span>
                 `;
-                
+
                 const existingMsg = document.getElementById('orderNotFoundLoading');
                 if (existingMsg) {
                     existingMsg.remove();
                 }
                 statusUpdates.insertBefore(loadingMsg, statusUpdates.firstChild);
-                
+
                 await new Promise(resolve => setTimeout(resolve, waitTime));
-                
+
                 // Retry loading order data
-                await loadOrderData(retryCount + 1, maxRetries);
-                return;
+                return await loadOrderData(retryCount + 1, maxRetries);
             } else {
                 // Max retries exceeded - redirect to home
                 console.error('Order not found after max retries');
@@ -104,11 +109,14 @@ async function loadOrderData(retryCount = 0, maxRetries = 3) {
                 setTimeout(() => {
                     window.location.href = '/';
                 }, 2000);
+
+                return false;
             }
         }
     } catch (error) {
         console.error('Load order error:', error);
         showError('Failed to load order data');
+        return false;
     } finally {
         hideLoading();
     }
