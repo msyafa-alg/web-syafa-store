@@ -4,9 +4,46 @@ const path = require('path');
 class Storage {
   constructor() {
     this.dataDir = path.join(__dirname, '..', 'data');
+    // In-memory storage for Vercel/EROFS compatibility
+    this.memoryStore = {
+      orders: [],
+      users: []
+    };
+    this.isReadOnly = false;
+    this.initialized = false;
+  }
+
+  async init() {
+    if (this.initialized) return;
+    
+    try {
+      // Try to load data from file system first
+      const filePath = path.join(this.dataDir, 'orders.json');
+      await fs.access(filePath);
+      const data = await fs.readFile(filePath, 'utf8');
+      if (data && data.trim() !== '') {
+        this.memoryStore.orders = JSON.parse(data);
+        console.log('📁 Loaded orders from file system');
+      }
+    } catch (error) {
+      // File system is read-only or file doesn't exist
+      if (error.code === 'EROFS') {
+        this.isReadOnly = true;
+        console.log('⚠️ File system is read-only, using in-memory storage');
+      } else {
+        console.log('📁 Starting with empty in-memory storage');
+      }
+    }
+    
+    this.initialized = true;
   }
 
   async readJSON(filename) {
+    // Initialize if needed
+    if (!this.initialized) {
+      await this.init();
+    }
+
     try {
       const filePath = path.join(this.dataDir, filename);
       
@@ -58,19 +95,48 @@ class Storage {
         return [];
       }
       
+      // Also update memory store
+      if (filename === 'orders.json') {
+        this.memoryStore.orders = parsedData;
+      } else if (filename === 'users.json') {
+        this.memoryStore.users = parsedData;
+      }
+      
       return parsedData;
     } catch (error) {
-      console.error(`Error reading ${filename}:`, error);
+      // Check if it's EROFS (read-only file system)
+      if (error.code === 'EROFS' || error.message.includes('EROFS')) {
+        this.isReadOnly = true;
+        console.warn('⚠️ Read-only file system detected, using in-memory storage');
+      }
       
-      // On any error, return empty array/object
-      if (filename === 'orders.json' || filename === 'users.json') {
-        return [];
+      // Return from memory store
+      if (filename === 'orders.json') {
+        return this.memoryStore.orders || [];
+      } else if (filename === 'users.json') {
+        return this.memoryStore.users || [];
       }
       return {};
     }
   }
 
   async writeJSON(filename, data) {
+    // Initialize if needed
+    if (!this.initialized) {
+      await this.init();
+    }
+
+    // If read-only, just update memory store
+    if (this.isReadOnly) {
+      console.log(`📝 [Memory] Writing ${filename}:`, data.length ? `${data.length} items` : 'object');
+      if (filename === 'orders.json') {
+        this.memoryStore.orders = data;
+      } else if (filename === 'users.json') {
+        this.memoryStore.users = data;
+      }
+      return true;
+    }
+
     try {
       const filePath = path.join(this.dataDir, filename);
       
@@ -104,8 +170,30 @@ class Storage {
       
       const jsonData = JSON.stringify(validatedData, null, 2);
       await fs.writeFile(filePath, jsonData, 'utf8');
+      
+      // Also update memory store
+      if (filename === 'orders.json') {
+        this.memoryStore.orders = validatedData;
+      } else if (filename === 'users.json') {
+        this.memoryStore.users = validatedData;
+      }
+      
       return true;
     } catch (error) {
+      // Check if it's EROFS (read-only file system)
+      if (error.code === 'EROFS' || error.message.includes('EROFS')) {
+        this.isReadOnly = true;
+        console.warn('⚠️ Read-only file system detected, falling back to in-memory storage');
+        
+        // Update memory store instead
+        if (filename === 'orders.json') {
+          this.memoryStore.orders = data;
+        } else if (filename === 'users.json') {
+          this.memoryStore.users = data;
+        }
+        return true;
+      }
+      
       console.error(`Error writing ${filename}:`, error);
       throw error;
     }
