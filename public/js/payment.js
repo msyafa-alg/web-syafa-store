@@ -92,15 +92,18 @@ async function loadOrderData(retryCount = 0, maxRetries = 3) {
                 await loadOrderData(retryCount + 1, maxRetries);
                 return;
             } else {
-                // Max retries exceeded
+                // Max retries exceeded - redirect to home
                 console.error('Order not found after max retries');
-                addStatusUpdate('Failed to load order data. Please refresh the page.', 'error');
-                
+                addStatusUpdate('Order not found, redirecting to home...', 'error');
+
                 // Remove loading message
                 const loadingMsg = document.getElementById('orderNotFoundLoading');
                 if (loadingMsg) loadingMsg.remove();
-                
-                showError('Order not found. Please refresh the page or contact support if the problem persists.');
+
+                // Redirect to home after a short delay
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
             }
         }
     } catch (error) {
