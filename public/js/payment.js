@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     startStatusPolling();
 });
 
-// Load order data
-async function loadOrderData() {
+// Load order data with retry logic
+async function loadOrderData(retryCount = 0, maxRetries = 3) {
     try {
         showLoading();
         
@@ -64,7 +64,44 @@ async function loadOrderData() {
                 return;
             }
         } else {
-            redirectToHome('Order not found');
+            // Order not found - implement retry logic
+            if (retryCount < maxRetries) {
+                const waitTime = (retryCount + 1) * 1000; // 1s, 2s, 3s
+                console.log(`Order not found, retrying in ${waitTime}ms... (attempt ${retryCount + 1}/${maxRetries})`);
+                
+                addStatusUpdate(`Loading order data... (attempt ${retryCount + 1}/${maxRetries})`, 'info');
+                
+                // Show temporary loading message
+                const loadingMsg = document.createElement('div');
+                loadingMsg.className = 'order-not-found-loading';
+                loadingMsg.id = 'orderNotFoundLoading';
+                loadingMsg.innerHTML = `
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Loading order data, please wait...</span>
+                `;
+                
+                const existingMsg = document.getElementById('orderNotFoundLoading');
+                if (existingMsg) {
+                    existingMsg.remove();
+                }
+                statusUpdates.insertBefore(loadingMsg, statusUpdates.firstChild);
+                
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+                
+                // Retry loading order data
+                await loadOrderData(retryCount + 1, maxRetries);
+                return;
+            } else {
+                // Max retries exceeded
+                console.error('Order not found after max retries');
+                addStatusUpdate('Failed to load order data. Please refresh the page.', 'error');
+                
+                // Remove loading message
+                const loadingMsg = document.getElementById('orderNotFoundLoading');
+                if (loadingMsg) loadingMsg.remove();
+                
+                showError('Order not found. Please refresh the page or contact support if the problem persists.');
+            }
         }
     } catch (error) {
         console.error('Load order error:', error);

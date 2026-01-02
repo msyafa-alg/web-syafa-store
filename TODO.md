@@ -1,33 +1,37 @@
-# TODO - Fix EROFS Error (In-Memory Storage)
+# Bug Fix: "Order not found" Issue
 
 ## Problem
-Vercel's file system is read-only (`/var/task`), causing EROFS error when trying to read/write `data/orders.json`.
+When user completes purchase, they see "Order not found" error and get redirected back to home page.
+
+## Root Causes
+1. Race condition - Order not saved yet when check-order API is called
+2. Serverless memory storage - Data might not persist between requests on Vercel
 
 ## Solution
-Implement in-memory storage fallback when file system is read-only.
+Add retry logic in `public/js/payment.js` when order is not found, with proper loading state and user feedback.
 
 ## Tasks
-- [x] 1. Create TODO.md file to track progress
-- [x] 2. Modify utils/storage.js to add in-memory storage fallback
-- [x] 3. Test the solution works without errors ✅
+- [x] Implement retry logic with exponential backoff (max 3 retries)
+- [x] Show loading spinner during retry attempts
+- [x] Add user-friendly error messages instead of immediate redirect
+- [ ] Test the fix
 
-## Changes Made
-### utils/storage.js
-✅ Added in-memory storage (`memoryStore` object with `orders` and `users` arrays)
-✅ Added `init()` method to detect read-only file system on startup
-✅ Added `isReadOnly` flag to track file system state
-✅ Modified `readJSON()` to fallback to memory store on EROFS error
-✅ Modified `writeJSON()` to use memory store when `isReadOnly` is true
-✅ Memory store is synchronized with file system when possible
+## Changes Made (public/js/payment.js)
 
-## How It Works
-1. On first access, the storage tries to load data from the file system
-2. If EROFS error is detected, it switches to read-only mode
-3. All read operations return data from memory store
-4. All write operations update memory store only
-5. This prevents EROFS errors while keeping the app functional
+### Modified `loadOrderData()` function:
+- Added `retryCount` and `maxRetries` parameters (default: 3 retries)
+- When order is not found, instead of immediately redirecting to home:
+  - Shows a loading message in the status updates area
+  - Waits 1s, 2s, 3s between retries (exponential backoff)
+  - Adds status update showing retry attempt
+  - After max retries exhausted, shows user-friendly error message
+  - User can refresh the page to try again
 
-## Notes
-- In-memory storage is fast but data may reset on cold starts
-- For production with persistent data, consider Vercel KV (Redis)
+### User Experience Improvement:
+- **Before**: Immediate redirect to home with "Order not found" alert
+- **After**: 
+  - Automatic retry up to 3 times
+  - Visual feedback showing loading progress
+  - User stays on payment page
+  - Friendly error message with refresh instruction
 
